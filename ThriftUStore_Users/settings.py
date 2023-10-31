@@ -103,16 +103,54 @@ WSGI_APPLICATION = "ThriftUStore_Users.wsgi.application"
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '/cloudsql/user-microservice-402518:us-east1:thriftustore-user',
-        # 'HOST': '35.196.238.126',
-        'NAME': 'Users',
-        'USER': 'thriftustore-user',
-        'PASSWORD': 'dbuserdbuser',
+SETTING_MODEL = 'test'
+if 'GAE_INSTANCE' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/user-microservice-402518:us-east1:thriftustore-user',
+            # 'HOST': '35.196.238.126',
+            'NAME': 'Users',
+            'USER': 'thriftustore-user',
+            'PASSWORD': 'dbuserdbuser',
+        }
     }
-}
+# If running locally, use a local database.
+else:
+    if SETTING_MODEL == 'test':
+        print("connect to cloud database")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'HOST': '35.196.238.126',
+                'NAME': 'Users',
+                'USER': 'thriftustore-user',
+                'PASSWORD': 'dbuserdbuser',
+            }
+        }
+    else:
+        print("connect to local database")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'users',
+                'USER': 'root',
+                'PASSWORD': 'dbuserdbuser',
+                'HOST': 'localhost',
+                'PORT': '3306',
+            }
+        }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': '/cloudsql/user-microservice-402518:us-east1:thriftustore-user',
+#         # 'HOST': '35.196.238.126',
+#         'NAME': 'Users',
+#         'USER': 'thriftustore-user',
+#         'PASSWORD': 'dbuserdbuser',
+#     }
+# }
 
 
 
@@ -183,7 +221,7 @@ SIMPLE_JWT = {
 }
 
 
-SITE_ID = 1
+SITE_ID = 2
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -199,14 +237,10 @@ SOCIALACCOUNT_PROVIDERS = {
 
 LOGIN_REDIRECT_URL = 'hello_url'
 LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = True
-ACCOUNT_LOGOUT_ON_GET= True
-USERNAME_REQUIRED = False
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
