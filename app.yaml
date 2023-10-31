@@ -6,3 +6,9 @@ handlers:
 
 - url: /.*
   script: auto
+
+beta_settings:
+    cloud_sql_instances: user-microservice-402518:us-east1:thriftustore-user
+
+
+

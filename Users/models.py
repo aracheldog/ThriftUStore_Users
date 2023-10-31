@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 
@@ -12,8 +13,13 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
+
 # Create your models here.
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=255)
     uid = models.CharField(max_length=255)
     avatar_url = models.CharField(max_length=255)
@@ -26,6 +32,10 @@ class User(AbstractBaseUser):
     state = models.CharField(max_length=255, default="", null=False)
     country = models.CharField(max_length=255, default="", null=False)
     description = models.TextField(default="", null=False)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
 

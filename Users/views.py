@@ -41,16 +41,20 @@ class UserRegistrationView(APIView):
 
 class UserSignInView(APIView):
     def post(self, request):
+
         email = request.data.get('email')
         password = request.data.get('password')
+        print(email,password)
         user = authenticate(request, username=email, password=password)
-
+        print(user, email, password)
         if user is not None:
             token = AccessToken.for_user(user)
             return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    def get(self,request):
+        return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
 class UserSignOutView(APIView):
     # check if user already logged in, otherwise will not have access to this api
