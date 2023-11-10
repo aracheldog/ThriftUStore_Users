@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import datetime
 import os
 from pathlib import Path
+from google.cloud import pubsub_v1
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,33 +84,19 @@ TEMPLATES = [
 WSGI_APPLICATION = "ThriftUStore_Users.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# for connecting to local database
+SETTING_MODEL = 'dev'
+SITE_ID = 1
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'users',
-#         'USER': 'root',
-#         'PASSWORD': 'dbuserdbuser',
-#         'HOST':'localhost',
-#         'PORT':'3306',
-#     }
-# }
+# # for connecting to remote database
+# SETTING_MODEL = 'test'
+# SITE_ID = 2
 
-SETTING_MODEL = 'test'
 if 'GAE_INSTANCE' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '/cloudsql/user-microservice-402518:us-east1:thriftustore-user',
-            # 'HOST': '35.196.238.126',
             'NAME': 'Users',
             'USER': 'thriftustore-user',
             'PASSWORD': 'dbuserdbuser',
@@ -140,19 +127,6 @@ else:
                 'PORT': '3306',
             }
         }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'HOST': '/cloudsql/user-microservice-402518:us-east1:thriftustore-user',
-#         # 'HOST': '35.196.238.126',
-#         'NAME': 'Users',
-#         'USER': 'thriftustore-user',
-#         'PASSWORD': 'dbuserdbuser',
-#     }
-# }
-
-
 
 
 
@@ -221,7 +195,6 @@ SIMPLE_JWT = {
 }
 
 
-SITE_ID = 2
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -242,5 +215,8 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+credentials_path = "user-microservice-pub-sub-keys.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
 

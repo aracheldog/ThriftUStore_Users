@@ -1,7 +1,12 @@
+from datetime import datetime
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate
+from django.dispatch import Signal
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
+from google.cloud import pubsub_v1
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -23,6 +28,8 @@ def hello(request):
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
 
+user_registered_signal = Signal()
+
 class UserRegistrationView(APIView):
     def post(self, request):
         email = request.data.get('email')
@@ -37,7 +44,42 @@ class UserRegistrationView(APIView):
             return Response({'error': 'Email is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(email=email, password=password)
+
+        # send user registered signal
+        user_registered_signal.send(sender=self.__class__, user=user)
+
         return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
+
+# Connect a function to the signal to publish to Google Pub/Sub
+def user_registered_handler(sender, **kwargs):
+    user = kwargs['user']
+    publish_to_pubsub(user.email)
+
+
+user_registered_signal.connect(user_registered_handler)
+def publish_to_pubsub(email):
+    # Set topic path
+    topic_path = 'projects/user-microservice-402518/topics/UserMicroRegisterationTopic'
+
+    # Create Pub/Sub Publisher client
+    publisher = pubsub_v1.PublisherClient()
+
+
+
+    # Build message
+    message_data = {
+        'event_type': 'user_registered',
+        'user_email': email,
+        'registration_time': datetime.now().isoformat(),
+    }
+    message_str = json.dumps(message_data).encode('utf-8')
+
+    # Publish message
+    future = publisher.publish(topic_path, data=message_str)
+    future.result()
+
+    print(f'Message published to {topic_path}.')
+
 
 class UserSignInView(APIView):
     def post(self, request):

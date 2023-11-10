@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "user-microservice-402518",
+  "private_key_id": "9b8fd20de39b38ec321039fd3eb2c072175ae54c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCgOjRs8XrOoupG\nsxuHY4fLvAHICz33xgC+dskMXSXlEizOPQv8LMidbyYLldDAkqZS01yqvNzI9aVe\n59yHjCp6fa1VbSiLffQ1I3dP0bbwaD2epXGA5Wmp/rFz06mYmY7I1u1cylHZptve\nq6lqpo85NG6JZEpirnih/J9PWuwL52I+Lw4lmCa2qhVev2/1X8gy7KoSGB/XVdjt\nLMLeMjFAVHJc6iq48yKgnO/QNia9HteKPpVv23YCWs2miPWsOOxWfgTh3dzsbjqa\neQ068WVLFlGNlQL49LjyNRwvT/EuMDVPJ3JYPMoIsQWUtl3r3thoceYhIFiySWSm\nyme0xQgzAgMBAAECggEACVbbL25z5g+A8FYISL/4blurDun41rRn3rI1zc6wIsYI\nbo0IYc6KcwLDiPFWlaL2puVDBYC0rdIDraB+LjhxUWp56/zM3DSfQ2mpzrE+pIyu\n6sxh7U1x90KtPT8dJ5PryrEcbMguNS2Qq03+NgU3W/I+byu1WkMpLOf4sTtvftIK\nPQdfuItpEyihjYe7Rcyt26zShvAo6TdhmMwMcLPleUvmFulikNzsNJi3PCPq4p+8\n3rvxZtCXFneuLGKQGeA67bYM3mZkjK5M6JKeXhrlfJUiRydEwvsARPVSnQLQHaLt\nQ76t37NtIMmxaXkjg3tkpBbnpqRU2CPLdKJub4eNwQKBgQDQoIqj96LXDeob40Dh\nc6+ae4DJComjiOvVhpqI9kshaAslQPko+W+R5It/ZivlNKMk08Kzt3u/YnXcZh1S\n/Chp/swGO7vEP8lAPOOuxxSKRR6gVNWBPs9tvE3GZGgc+7hyK5gpFWwaXhdo/nSQ\n/H2NnOwxGmA8TzYpAfKqKZ3oSQKBgQDEnDGiNcpQBevjn91lqI9/c7Cfo2ObCpMb\nPw5BoRyHUim2AF29xw3QbolGRV9MFdg2s7+xSLnsTOCcRXbcj1awDRu05skrgDkc\nN4zcqWP8kOqiMN7gM9yy9B8e8444bCpdodIxgxApWkKcpI+9nSh0YSG8sk/Ttd0c\nhRW5qMZEmwKBgQC05Z+RUVYXVu9ZwxEs69yl/NTMfaCe9khXW2F/xN+cVdTkNpRV\nHQPK4vq6OuNw2NVlR2CZ6E0aw8sikkB3BkIctlw+Q2kqX4yncKSTlfePdSN7LlP6\nv3Wo1xAxKDrGdtWV2YsUhIi5zEBMP+bfGK/dLOX4JcCwSpbRs+iv92n+UQKBgQCR\ntyGiEzPKc1kM7yLrgS45S8kPx8y+z+uPOgCa64l1UZPQbB0N1kWKwSHEjw2+GkKQ\n6E+eWURSufeOWn1pomKhQFXUkWdvcizhmNoxgOm1+sGrS4UjrcxYZU3bZq91adVM\nZ+6c+4Iy486SwfQ2mA+vkX2rmIxJYHRr+sbLPycTGQKBgEdyVNuPX0vLcvrOFrqb\n9C3kVnu2870XGyq/H9kq9nIhfVOq2mtUvEJWfOjUYIcnxzp9h2QqOc8FOHjDMttO\n2sVF4QAtRAB9/6b6sdytDvpvIQZevtBQjsF6heV69OSQWE4shX8zMcZ5hwj+DUjv\nDHwTz9Dgvni/o4zstY4QGCFD\n-----END PRIVATE KEY-----\n",
+  "client_email": "user-microservice-service-acco@user-microservice-402518.iam.gserviceaccount.com",
+  "client_id": "104225275168251373981",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/user-microservice-service-acco%40user-microservice-402518.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
