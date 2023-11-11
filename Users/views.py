@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout, login
 from django.dispatch import Signal
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
@@ -55,7 +55,6 @@ def user_registered_handler(sender, **kwargs):
     user = kwargs['user']
     publish_to_pubsub(user.email)
 
-
 user_registered_signal.connect(user_registered_handler)
 def publish_to_pubsub(email):
     # Set topic path
@@ -91,6 +90,7 @@ class UserSignInView(APIView):
         print(user, email, password)
         if user is not None:
             token = AccessToken.for_user(user)
+            login(request, user)
             return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -103,9 +103,9 @@ class UserSignOutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
-        messages.success(request, 'You have been logged out.')
-        return redirect('hello_url')
+        logout(request)
 
+        return Response({'detail': 'You have been logged out successfully.'}, status=status.HTTP_200_OK)
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -117,5 +117,18 @@ class UserProfileView(APIView):
 
 
 
+class UserDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request):
 
+        user = request.user
+        print(user)
+        # if user exists, delete user
+        if user:
+            user.delete()
+            logout(request)  # logout
+            messages.success(request, 'Your account has been deleted.')
+            return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
