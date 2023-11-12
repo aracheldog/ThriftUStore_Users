@@ -11,7 +11,7 @@ urlpatterns = [
     path('users/sign_out/', UserSignOutView.as_view(), name='sign_out'),
     # provide a uniform url to check if user registered
     path('users/verify/', TokenVerifyView.as_view(), name='verify'),
-    path('users/<int:user_id>/profile/', UserProfileView.as_view(), name='user_profile'),
+    path('users/profile/', UserProfileView.as_view(), name='user_profile'),
     path('users/delete/', UserDeleteView.as_view(), name='user_delete'),
 
 ]

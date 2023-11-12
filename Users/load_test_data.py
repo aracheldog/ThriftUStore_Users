@@ -32,7 +32,7 @@ with open(csv_file_path, 'r') as csvfile:
 
         if not User.objects.filter(email=email).exists():
 
-            User.objects.create(full_name=full_name,
+            User.objects.create_user(full_name=full_name,
                                 avatar_url=avatar_url,
                                 email=email,
                                 password=password,

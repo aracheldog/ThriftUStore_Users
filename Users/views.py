@@ -109,8 +109,9 @@ class UserSignOutView(APIView):
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
-    def get(self,request,user_id):
-        user = get_object_or_404(User, id=user_id)
+    def get(self,request):
+        user = request.user
+        print(user)
         serializer = UserSerializer(user)
         user_json = JSONRenderer().render(serializer.data)
         return HttpResponse(user_json, content_type='application/json')
