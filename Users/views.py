@@ -46,7 +46,7 @@ def validate_address(address, zip_code, state):
     lookup.state = state
     lookup.zipcode = zip_code
 
-    lookup.match = MatchType.INVALID
+    lookup.match = MatchType.STRICT
 
     try:
         client.send_lookup(lookup)
@@ -55,7 +55,10 @@ def validate_address(address, zip_code, state):
         return False
 
     result = lookup.result
-    print(result)
+    if result:
+
+        print(result[0].components.street_name)
+        print(result[0].components.zipcode)
     return bool(result)  # Returns True if there is at least one valid candidate
 
 user_registered_signal = Signal()
