@@ -19,6 +19,12 @@ from Users.models import User
 from .serializers import UserSerializer
 
 
+from smartystreets_python_sdk import SharedCredentials, StaticCredentials, exceptions, ClientBuilder
+from smartystreets_python_sdk.us_street import Lookup as StreetLookup
+from smartystreets_python_sdk.us_street.match_type import MatchType
+import os
+
+
 
 # Create your views here.
 @api_view(["GET"])
@@ -27,6 +33,30 @@ def hello(request):
     if request.method == "GET":
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
+
+def validate_address(address, zip_code, state):
+    key = os.environ['SMARTY_AUTH_WEB']
+    hostname = os.environ['SMARTY_WEBSITE_DOMAIN']
+    credentials = SharedCredentials(key, hostname)
+
+    client = ClientBuilder(credentials).with_licenses(["us-core-cloud"]).build_us_street_api_client()
+
+    lookup = StreetLookup()
+    lookup.street = address
+    lookup.state = state
+    lookup.zipcode = zip_code
+
+    lookup.match = MatchType.INVALID
+
+    try:
+        client.send_lookup(lookup)
+    except exceptions.SmartyException as err:
+        print(err)
+        return False
+
+    result = lookup.result
+    print(result)
+    return bool(result)  # Returns True if there is at least one valid candidate
 
 user_registered_signal = Signal()
 
@@ -42,6 +72,17 @@ class UserRegistrationView(APIView):
         # check if email already in use
         if User.objects.filter(email=email).exists():
             return Response({'error': 'Email is already in use.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get user address details from the registration form
+        address = request.POST.get('address')
+        state = request.POST.get('state')
+        zip_code = request.POST.get('zip_code')
+
+        # Run SmartyStreets address validation
+        is_valid_address = validate_address(address, zip_code, state)
+
+        if not is_valid_address:
+            return Response({'error': 'Address is not valid!'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(email=email, password=password)
 

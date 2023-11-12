@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from google.cloud import pubsub_v1
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -220,5 +221,10 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 credentials_path = "user-microservice-pub-sub-keys.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+os.environ['SMARTY_AUTH_WEB'] = "184470468785545206"
+os.environ['SMARTY_WEBSITE_DOMAIN'] = "127.0.0.1"
+
+
 
 
