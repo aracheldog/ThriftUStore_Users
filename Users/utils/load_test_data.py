@@ -13,7 +13,7 @@ django.setup()
 from Users.models import User
 
 
-csv_file_path = '../MOCK_DATA.csv'
+csv_file_path = '../../MOCK_DATA.csv'
 
 with open(csv_file_path, 'r') as csvfile:
     reader = csv.DictReader(csvfile)
