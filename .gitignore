@@ -153,4 +153,5 @@ cython_debug/
 .git/
 MOCK_DATA.csv
 cloud-sql-proxy
-
+user-microservice-pub-sub-keys.json
+user-microservice-apigw.json

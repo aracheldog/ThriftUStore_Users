@@ -24,44 +24,18 @@ from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 from smartystreets_python_sdk.us_street.match_type import MatchType
 import os
 
+from .utils.jwt import generate_jwt
+
 
 
 # Create your views here.
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
 def hello(request):
     if request.method == "GET":
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
 
-def validate_address(address, zip_code, state):
-    key = os.environ['SMARTY_AUTH_WEB']
-    hostname = os.environ['SMARTY_WEBSITE_DOMAIN']
-    credentials = SharedCredentials(key, hostname)
 
-    client = ClientBuilder(credentials).with_licenses(["us-core-cloud"]).build_us_street_api_client()
-
-    lookup = StreetLookup()
-    lookup.street = address
-    lookup.state = state
-    lookup.zipcode = zip_code
-
-    lookup.match = MatchType.STRICT
-
-    try:
-        client.send_lookup(lookup)
-    except exceptions.SmartyException as err:
-        print(err)
-        return False
-
-    result = lookup.result
-    if result:
-
-        print(result[0].components.street_name)
-        print(result[0].components.zipcode)
-    return bool(result)  # Returns True if there is at least one valid candidate
-
-user_registered_signal = Signal()
 
 class UserRegistrationView(APIView):
     def post(self, request):
@@ -95,6 +69,91 @@ class UserRegistrationView(APIView):
 
         return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
 
+class UserSignInView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            # add customized data to token
+            personalized_claims = {
+                "user_email": email,
+            }
+            # generate the token by using the google service account
+            token = generate_jwt(sa_keyfile="user-microservice-apigw.json" ,personalized_claims=personalized_claims)
+            login(request, user)
+            return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
+
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def get(self,request):
+        return Response(data="Hello from users API", status=status.HTTP_200_OK)
+
+class UserSignOutView(APIView):
+    # check if user already logged in, otherwise will not have access to this api
+
+
+    def post(self,request):
+        logout(request)
+
+        return Response({'detail': 'You have been logged out successfully.'}, status=status.HTTP_200_OK)
+
+class UserProfileView(APIView):
+
+    def get(self,request):
+        user = request.user
+        print(user)
+        serializer = UserSerializer(user)
+        user_json = JSONRenderer().render(serializer.data)
+        return HttpResponse(user_json, content_type='application/json')
+
+
+
+class UserDeleteView(APIView):
+
+    def delete(self, request):
+        user = request.user
+        print(user)
+        # if user exists, delete user
+        if user:
+            user.delete()
+            logout(request)  # logout
+            messages.success(request, 'Your account has been deleted.')
+            return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+def validate_address(address, zip_code, state):
+    key = os.environ['SMARTY_AUTH_WEB']
+    hostname = os.environ['SMARTY_WEBSITE_DOMAIN']
+    credentials = SharedCredentials(key, hostname)
+
+    client = ClientBuilder(credentials).with_licenses(["us-core-cloud"]).build_us_street_api_client()
+    lookup = StreetLookup()
+    lookup.street = address
+    lookup.state = state
+    lookup.zipcode = zip_code
+
+    lookup.match = MatchType.STRICT
+
+    try:
+        client.send_lookup(lookup)
+    except exceptions.SmartyException as err:
+        print(err)
+        return False
+
+    result = lookup.result
+    if result:
+
+        print(result[0].components.street_name)
+        print(result[0].components.zipcode)
+    return bool(result)  # Returns True if there is at least one valid candidate
+
+user_registered_signal = Signal()
+
 # Connect a function to the signal to publish to Google Pub/Sub
 def user_registered_handler(sender, **kwargs):
     user = kwargs['user']
@@ -123,58 +182,3 @@ def publish_to_pubsub(email):
     future.result()
 
     print(f'Message published to {topic_path}.')
-
-
-class UserSignInView(APIView):
-    def post(self, request):
-
-        email = request.data.get('email')
-        password = request.data.get('password')
-        print(email,password)
-        user = authenticate(request, username=email, password=password)
-        print(user, email, password)
-        if user is not None:
-            token = AccessToken.for_user(user)
-            login(request, user)
-            return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-    def get(self,request):
-        return Response(data="Hello from users API", status=status.HTTP_200_OK)
-
-class UserSignOutView(APIView):
-    # check if user already logged in, otherwise will not have access to this api
-    permission_classes = [IsAuthenticated]
-
-    def post(self,request):
-        logout(request)
-
-        return Response({'detail': 'You have been logged out successfully.'}, status=status.HTTP_200_OK)
-
-class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self,request):
-        user = request.user
-        print(user)
-        serializer = UserSerializer(user)
-        user_json = JSONRenderer().render(serializer.data)
-        return HttpResponse(user_json, content_type='application/json')
-
-
-
-class UserDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
-    def delete(self, request):
-
-        user = request.user
-        print(user)
-        # if user exists, delete user
-        if user:
-            user.delete()
-            logout(request)  # logout
-            messages.success(request, 'Your account has been deleted.')
-            return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-
