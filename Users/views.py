@@ -81,13 +81,14 @@ class UserRegistrationView(APIView):
         state = request.POST.get('state')
         zip_code = request.POST.get('zip_code')
 
+        if address and state and zip_code:
         # Run SmartyStreets address validation
-        is_valid_address = validate_address(address, zip_code, state)
-
-        if not is_valid_address:
-            return Response({'error': 'Address is not valid!'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = User.objects.create_user(email=email, password=password)
+            is_valid_address = validate_address(address, zip_code, state)
+            if not is_valid_address:
+                return Response({'error': 'Address is not valid!'}, status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.create_user(email=email, password=password, address = address, state = state, zip_code=zip_code)
+        else:
+            user = User.objects.create_user(email=email, password=password)
 
         # send user registered signal
         user_registered_signal.send(sender=self.__class__, user=user)

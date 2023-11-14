@@ -1,0 +1,64 @@
+# openapi2-appengine.yaml
+swagger: '2.0'
+info:
+  title: thriftustore-api-gateway thriftustore
+  description: Sample API on API Gateway with an App Engine backend
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      summary: hello
+      operationId: hello
+      x-google-backend:
+        address: https://user-microservice-402518.ue.r.appspot.com
+        jwt_audience: 842946557244-389t6t106t8bgd1bubmqqlksao64eh2m.apps.googleusercontent.com
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+
+  /users/sign_in:
+    post:
+      summary: User Sign In
+      operationId: sign_in
+      parameters:
+        - in: body
+          name: user
+          description: The user to create.
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      x-google-backend:
+        address: https://user-microservice-402518.ue.r.appspot.com/users/sign_in
+        jwt_audience: 842946557244-389t6t106t8bgd1bubmqqlksao64eh2m.apps.googleusercontent.com
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+
+  /users/sign_out:
+    post:
+      summary: User Sign Out
+      operationId: sign_out
+      x-google-backend:
+        address: https://user-microservice-402518.ue.r.appspot.com/users/sign_out
+        jwt_audience: 842946557244-389t6t106t8bgd1bubmqqlksao64eh2m.apps.googleusercontent.com
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+

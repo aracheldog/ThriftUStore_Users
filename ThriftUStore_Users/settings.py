@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from google.cloud import pubsub_v1
 
+APPEND_SLASH=False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,6 +92,8 @@ SITE_ID = 1
 
 # # for connecting to remote database
 # SETTING_MODEL = 'test'
+
+# change this one before deployment
 # SITE_ID = 2
 
 if 'GAE_INSTANCE' in os.environ:
