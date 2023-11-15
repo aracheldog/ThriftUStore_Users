@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
 ]
 
 
@@ -187,8 +188,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
 
     ]
 }
@@ -214,13 +216,15 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'hello_url'
+# LOGIN_REDIRECT_URL = 'hello_url'
 LOGOUT_REDIRECT_URL = '/'
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+
 
 credentials_path = "user-microservice-pub-sub-keys.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path

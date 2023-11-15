@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 
+import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login
 from django.dispatch import Signal
@@ -26,6 +27,45 @@ import os
 
 from .utils.jwt import generate_jwt
 
+
+def google_login_callback(request):
+    # Get the authorization code from the query parameters
+    authorization_code = request.GET.get('code')
+
+    # Google OAuth token endpoint
+    token_url = 'https://oauth2.googleapis.com/token'
+
+    # Your Google OAuth client ID and secret
+    client_id = '258239284713-8nb3h72ebnp38b2a1i093t6fd2og177p.apps.googleusercontent.com'
+    client_secret = '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'
+    redirect_uri = 'http://localhost:8000/users/google/login/callback/'
+    # redirect_uri = 'https://user-microservice-402518.ue.r.appspot.com/users/google/login/callback/'
+
+    # Prepare the data for the POST request to exchange the code for an access token
+    data = {
+        'code': authorization_code,
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'redirect_uri': redirect_uri,
+        'grant_type': 'authorization_code',
+    }
+
+    # Make the POST request to the token endpoint
+    response = requests.post(token_url, data=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response to get the access token
+        access_token = response.json().get('access_token')
+        id_token = response.json().get('id_token')
+        print(response.json())
+        print("Access Token:", access_token)
+        print("ID token: ", id_token)
+        return redirect('hello_url')
+    else:
+        # Handle the error case
+        print("Error exchanging code for access token:", response.text)
+        return HttpResponse("Error retrieving access token.", status=response.status_code)
 
 
 # Create your views here.
@@ -93,10 +133,8 @@ class UserSignInView(APIView):
 class UserSignOutView(APIView):
     # check if user already logged in, otherwise will not have access to this api
 
-
     def post(self,request):
         logout(request)
-
         return Response({'detail': 'You have been logged out successfully.'}, status=status.HTTP_200_OK)
 
 class UserProfileView(APIView):

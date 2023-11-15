@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenVerifyView
 
 from Users import views
-from Users.views import UserSignInView, UserRegistrationView, UserSignOutView, UserProfileView, UserDeleteView
+from Users.views import UserSignInView, UserRegistrationView, UserSignOutView, UserProfileView, UserDeleteView, google_login_callback
 
 urlpatterns = [
     # path("", views.hello, name="hello_url"),
@@ -22,5 +22,7 @@ urlpatterns = [
     path('users/verify', TokenVerifyView.as_view(), name='verify'),
     path('users/profile', UserProfileView.as_view(), name='user_profile'),
     path('users/delete', UserDeleteView.as_view(), name='user_delete'),
+    path('users/google/login/callback/', google_login_callback, name='google_login_callback'),
+
 
 ]
