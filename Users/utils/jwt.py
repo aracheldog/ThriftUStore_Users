@@ -3,6 +3,7 @@ import google.auth.jwt
 import time
 
 
+# the audience is the api gw client id
 def generate_jwt(
     sa_keyfile= '../user-microservice-apigw.json',
     sa_email="jwt-182@user-microservice-402518.iam.gserviceaccount.com",
@@ -10,8 +11,8 @@ def generate_jwt(
     expiry_length=3600,
     personalized_claims=None,
 ):
-    """Generates a signed JSON Web Token using a Google API Service Account."""
 
+    """Generates a signed JSON Web Token using a Google API Service Account."""
     now = int(time.time())
 
     # build payload
