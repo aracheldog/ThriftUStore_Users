@@ -231,6 +231,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
 os.environ['SMARTY_AUTH_WEB'] = "184470468785545206"
 os.environ['SMARTY_WEBSITE_DOMAIN'] = "127.0.0.1"
+# os.environ['SMARTY_WEBSITE_DOMAIN'] = "user-microservice-402518.ue.r.appspot.com"
 
 
 
