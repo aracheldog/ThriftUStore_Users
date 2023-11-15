@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page Title</title>
+</head>
+<body>
+
+<!-- Hello Path -->
+<a href="{% url 'hello_url' %}">Hello</a>
+
+<!-- User Sign In Path -->
+<a href="{% url 'sign_in' %}">Sign In</a>
+
+<!-- Google Login Callback Path -->
+<a href="{% url 'google_login_callback' %}">Google Login Callback</a>
+
+<!-- User Sign Up Path -->
+<a href="{% url 'sign_up' %}">Sign Up</a>
+
+<!-- User Sign Out Path -->
+<a href="{% url 'sign_out' %}">Sign Out</a>
+
+<!-- User Profile Path -->
+<a href="{% url 'user_profile' %}">User Profile</a>
+
+<!-- User Delete Path -->
+<a href="{% url 'user_delete' %}">User Delete</a>
+
+</body>
+</html>

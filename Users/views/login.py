@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, logout, login
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ import requests
 def hello(request):
     if request.method == "GET":
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
+        # return render(request, 'hello.html')
 
 class UserSignInView(APIView):
     def post(self, request):
@@ -23,13 +24,13 @@ class UserSignInView(APIView):
         if user is not None:
             # add customized data to token
             personalized_claims = {
+                "user_id" : user.id,
                 "user_email": email,
             }
             # generate the token by using the google service account
             token = generate_jwt(sa_keyfile="user-microservice-apigw.json" ,personalized_claims=personalized_claims)
             login(request, user)
             return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
-
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -62,7 +63,6 @@ def google_login_callback(request):
         # Parse the JSON response to get the access token
         access_token = response.json().get('access_token')
         id_token = response.json().get('id_token')
-        print(response.json())
         print("Access Token:", access_token)
         print("ID token: ", id_token)
         return redirect('hello_url')
