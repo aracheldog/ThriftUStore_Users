@@ -37,6 +37,7 @@ class UserProfileView(APIView):
         if authorization_header and authorization_header.startswith('Bearer '):
             token = authorization_header.split(' ')[1]
             payload = google.auth.jwt.decode(token, verify=False)
+            # check if user logs in via google oauth2
             if "user_id" not in payload:
                 social_account = SocialAccount.objects.get(uid=payload['sub'])
                 user_id = social_account.user_id

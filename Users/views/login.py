@@ -1,7 +1,10 @@
+from allauth.socialaccount.models import SocialToken, SocialAccount
 from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -13,6 +16,12 @@ import requests
 @api_view(["GET"])
 def hello(request):
     if request.method == "GET":
+        if request.user.is_authenticated:
+            if SocialAccount.objects.filter(user=request.user, provider='google').exists():
+                print(request.user)
+                social_token = SocialToken.objects.get(account__user=request.user, account__provider='google')
+                print(social_token)
+
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
         # return render(request, 'hello.html')
 
@@ -39,6 +48,7 @@ class UserSignInView(APIView):
 
 
 def google_login_callback(request):
+
     # Get the authorization code from the query parameters
     authorization_code = request.GET.get('code')
     # Google OAuth token endpoint
@@ -65,8 +75,12 @@ def google_login_callback(request):
         id_token = response.json().get('id_token')
         print("Access Token:", access_token)
         print("ID token: ", id_token)
-        return redirect('hello_url')
+        return redirect('/')
+
     else:
         # Handle the error case
         print("Error exchanging code for access token:", response.text)
         return HttpResponse("Error retrieving access token.", status=response.status_code)
+
+
+
