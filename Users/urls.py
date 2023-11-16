@@ -4,7 +4,8 @@ from rest_framework_simplejwt.views import TokenVerifyView
 from Users import views
 # from Users.views import UserSignInView, UserRegistrationView, UserSignOutView, UserProfileView, UserDeleteView, google_login_callback
 
-from .views import UserSignInView, google_login_callback, UserRegistrationView, UserSignOutView, UserProfileView, UserDeleteView
+from .views import UserSignInView, UserRegistrationView, UserSignOutView, UserProfileView, UserDeleteView
+# from .views import google_login_callback
 
 urlpatterns = [
     # path("", views.hello, name="hello_url"),
