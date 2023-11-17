@@ -219,7 +219,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 #
 # LOGIN_REDIRECT_URL = 'users/google/login/callback/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'google_token'
 # LOGOUT_REDIRECT_URL = '/'
 
 

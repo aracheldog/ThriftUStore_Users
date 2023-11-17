@@ -28,6 +28,7 @@ import os
 from .utils.jwt import generate_jwt
 
 
+
 def google_login_callback(request):
     # Get the authorization code from the query parameters
     authorization_code = request.GET.get('code')

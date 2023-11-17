@@ -1,28 +1,33 @@
 from allauth.socialaccount.models import SocialToken, SocialAccount
-from django.contrib.auth import authenticate, logout, login
-from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate, logout, login, get_user_model
+from django.shortcuts import redirect, render, get_object_or_404, reverse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView
 
+from rest_framework.views import APIView
+from google.oauth2 import id_token
+
+from Users.serializers import UserSerializer
 from Users.utils.jwt import generate_jwt
 import requests
 
 
 @api_view(["GET"])
 def hello(request):
+    # Print request GET parameters
+
+
     if request.method == "GET":
         if request.user.is_authenticated:
-            if SocialAccount.objects.filter(user=request.user, provider='google').exists():
-                print(request.user)
-                social_token = SocialToken.objects.get(account__user=request.user, account__provider='google')
-                print(social_token)
-
-        return Response(data="Hello from users API", status=status.HTTP_200_OK)
+            token = request.session.get('token', {})
+            data = {'token': token}
+            return Response(data = data, status=status.HTTP_200_OK)
+        return Response(data="Hello from users API, you are not logged in, no token to retrieve", status=status.HTTP_200_OK)
         # return render(request, 'hello.html')
 
 class UserSignInView(APIView):
@@ -32,10 +37,7 @@ class UserSignInView(APIView):
         user = authenticate(request, username=email, password=password)
         if user is not None:
             # add customized data to token
-            personalized_claims = {
-                "user_id" : user.id,
-                "user_email": email,
-            }
+            personalized_claims = generate_token_claim(user.id)
             # generate the token by using the google service account
             token = generate_jwt(sa_keyfile="user-microservice-apigw.json" ,personalized_claims=personalized_claims)
             login(request, user)
@@ -46,41 +48,30 @@ class UserSignInView(APIView):
     def get(self,request):
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
+def generate_token_claim(user_id):
+    User = get_user_model()
+    user = get_object_or_404(User, id=user_id)
+    serializer = UserSerializer(user)
+    return serializer.data
 
-# def google_login_callback(request):
-#
-#     # Get the authorization code from the query parameters
-#     authorization_code = request.GET.get('code')
-#     # Google OAuth token endpoint
-#     token_url = 'https://oauth2.googleapis.com/token'
-#     # Your Google OAuth client ID and secret
-#     client_id = '258239284713-8nb3h72ebnp38b2a1i093t6fd2og177p.apps.googleusercontent.com'
-#     client_secret = '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'
-#     redirect_uri = 'http://localhost:8000/users/google/login/callback/'
-#     # redirect_uri = 'https://user-microservice-402518.ue.r.appspot.com/users/google/login/callback/'
-#     # Prepare the data for the POST request to exchange the code for an access token
-#     data = {
-#         'code': authorization_code,
-#         'client_id': client_id,
-#         'client_secret': client_secret,
-#         'redirect_uri': redirect_uri,
-#         'grant_type': 'authorization_code',
-#     }
-#     # Make the POST request to the token endpoint
-#     response = requests.post(token_url, data=data)
-#     # Check if the request was successful
-#     if response.status_code == 200:
-#         # Parse the JSON response to get the access token
-#         access_token = response.json().get('access_token')
-#         id_token = response.json().get('id_token')
-#         print("Access Token:", access_token)
-#         print("ID token: ", id_token)
-#         return redirect('/')
-#
-#     else:
-#         # Handle the error case
-#         print("Error exchanging code for access token:", response.text)
-#         return HttpResponse("Error retrieving access token.", status=response.status_code)
+class GoogleOauthJwtView(APIView):
+    def get(self, request):
+        user = request.user
+        social_account = SocialAccount.objects.get(user=user)
+        name = social_account.extra_data["name"]
+        user.full_name = name
+        user.save()
+        personalized_claims = generate_token_claim(user.id)
+        token = generate_jwt(sa_keyfile="user-microservice-apigw.json", personalized_claims=personalized_claims)
+        print(personalized_claims)
+        request.session['token'] = token
+        return redirect("hello_url")
+
+
+
+
+
+
 
 
 
