@@ -217,6 +217,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
     }
 }
+SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_ADAPTER = 'Users.adaptor.MySocialAccountAdapter'
 #
 # LOGIN_REDIRECT_URL = 'users/google/login/callback/'
 LOGIN_REDIRECT_URL = 'google_token'

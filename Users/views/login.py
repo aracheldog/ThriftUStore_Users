@@ -23,12 +23,15 @@ from Users.utils.jwt import generate_jwt
 def hello(request):
     # Print request GET parameters
     if request.method == "GET":
+        client_ip = request.headers.get('X-AppEngine-User-IP', 'Unknown')
+        print(client_ip)
         if request.user.is_authenticated:
             token = request.session.get('token', {})
             data = {'token': token}
             return Response(data = data, status=status.HTTP_200_OK)
         return Response(data="Hello from users API, you are not logged in, no token to retrieve", status=status.HTTP_200_OK)
         # return render(request, 'hello.html')
+
 
 class UserSignInView(APIView):
     def post(self, request):
@@ -48,7 +51,7 @@ class UserSignInView(APIView):
     def get(self,request):
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
-@method_decorator(login_required)
+
 def generate_token_claim(user_id):
 
     User = get_user_model()
@@ -69,13 +72,11 @@ class GoogleOauthJwtView(APIView):
         user.full_name = name
         user.save()
         personalized_claims = generate_token_claim(user.id)
-
         token = generate_jwt(sa_keyfile="user-microservice-apigw.json", personalized_claims=personalized_claims)
         print(personalized_claims)
         request.session['token'] = token
         request.session["access_token"] = personalized_claims['access_token']
         return redirect("hello_url")
-
 
 
 
