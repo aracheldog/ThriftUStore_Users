@@ -37,9 +37,6 @@ def generate_jwt(
     signer = google.auth.crypt.RSASigner.from_service_account_file(sa_keyfile)
     jwt = google.auth.jwt.encode(signer, payload).decode("utf-8")
     payload = google.auth.jwt.decode(jwt, verify=False)
-    print(jwt)
-    print()
-    print("decoded payload is: ", payload)
     return jwt
 
 # Example usage with personalized claims
