@@ -89,13 +89,13 @@ WSGI_APPLICATION = "ThriftUStore_Users.wsgi.application"
 
 # for connecting to local database
 SETTING_MODEL = 'dev'
-SITE_ID = 1
+# SITE_ID = 1
 
 # # for connecting to remote database
 # SETTING_MODEL = 'test'
 
 # change this one before deployment
-# SITE_ID = 2
+SITE_ID = 2
 
 if 'GAE_INSTANCE' in os.environ:
     DATABASES = {
@@ -239,8 +239,8 @@ credentials_path = "user-microservice-pub-sub-keys.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
 os.environ['SMARTY_AUTH_WEB'] = "184470468785545206"
-os.environ['SMARTY_WEBSITE_DOMAIN'] = "127.0.0.1"
-# os.environ['SMARTY_WEBSITE_DOMAIN'] = "user-microservice-402518.ue.r.appspot.com"
+# os.environ['SMARTY_WEBSITE_DOMAIN'] = "127.0.0.1"
+os.environ['SMARTY_WEBSITE_DOMAIN'] = "user-microservice-402518.ue.r.appspot.com"
 
 
 

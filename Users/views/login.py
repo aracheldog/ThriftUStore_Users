@@ -1,6 +1,7 @@
 from allauth.socialaccount.models import SocialToken, SocialAccount
 from django.contrib.auth import authenticate, logout, login, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.shortcuts import redirect, render, get_object_or_404, reverse
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -58,7 +59,10 @@ def generate_token_claim(user_id):
     user = get_object_or_404(User, id=user_id)
     serializer = UserSerializer(user)
     basic_data= serializer.data
-    social_token = SocialToken.objects.get(account__user=user, account__provider="google")
+    print("generate token user email is: ", user)
+    social_account = SocialAccount.objects.get(user_id=user.id)
+    social_token = SocialToken.objects.get(account_id=social_account.id)
+    print("obtained social token is: ", social_token)
     basic_data.update({"access_token": social_token.token})
     return basic_data
 
@@ -67,7 +71,23 @@ class GoogleOauthJwtView(APIView):
     @method_decorator(login_required)
     def get(self, request):
         user = request.user
-        social_account = SocialAccount.objects.get(user=user)
+        print(user.id)
+        all_social_accounts = SocialAccount.objects.all()
+        for social_account in all_social_accounts:
+            print(f"User: {social_account.user}")
+            print(f"Provider: {social_account.provider}")
+            print(f"UID: {social_account.uid}")
+            print(f"Extra Data: {social_account.extra_data}")
+            print(f"id : {social_account.id}")
+            print("\n")
+        all_sites = Site.objects.all()
+
+        # Get site_ids from the Site objects
+        site_ids = [site.id for site in all_sites]
+        print("site ids are, ", site_ids)
+        social_account = SocialAccount.objects.get(user_id=user.id)
+        print("social account extra details: ", social_account.extra_data)
+        print(social_account.id)
         name = social_account.extra_data["name"]
         user.full_name = name
         user.save()

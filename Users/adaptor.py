@@ -9,9 +9,8 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         user = sociallogin.user
         if user.id:
             return
-        try:
+        else:
             user = User.objects.get(email=user.email)
-            sociallogin.state['process'] = 'connect'
             sociallogin.connect(request, user)
-        except User.DoesNotExist:
-            pass
+            sociallogin.state['process'] = 'login'
+            sociallogin.state['user'] = user
