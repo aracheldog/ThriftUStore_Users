@@ -99,7 +99,9 @@ class GoogleOauthJwtView(APIView):
         return redirect("hello_url")
 
 
-
+class ApiGWGoogleView(APIView):
+    def get(self, request):
+        return redirect("https://user-microservice-402518.ue.r.appspot.com/users/google/login/")
 
 
 

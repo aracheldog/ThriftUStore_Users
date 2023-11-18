@@ -159,11 +159,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -217,7 +214,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
     }
 }
-SOCIALACCOUNT_LOGIN_ON_GET=True
+# SOCIALACCOUNT_LOGIN_ON_GET=True
 SOCIALACCOUNT_ADAPTER = 'Users.adaptor.MySocialAccountAdapter'
 #
 # LOGIN_REDIRECT_URL = 'users/google/login/callback/'

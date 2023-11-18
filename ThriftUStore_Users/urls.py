@@ -22,7 +22,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("Users.urls")),
     path("users/", include("allauth.urls")),
-    re_path(r'^users/google/login$', allauth_views.LoginView.as_view(), name='account_login'),
+
 
 
 ]
