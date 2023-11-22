@@ -24,76 +24,82 @@ from Users.utils.jwt import generate_jwt
 def hello(request):
     # Print request GET parameters
     if request.method == "GET":
-        client_ip = request.headers.get('X-AppEngine-User-IP', 'Unknown')
-        print(client_ip)
-        if request.user.is_authenticated:
+        # check if there is a bearer token in the request
+        # if there is a bearer token, then return the JWT token
+        authorization_header = request.headers.get('Authorization')
+        if authorization_header and authorization_header.startswith('Bearer '):
+            token = authorization_header.split(' ')[1]
+            data = {'token': token}
+            return Response(data = data, status=status.HTTP_200_OK)
+        elif request.user.is_authenticated:
             token = request.session.get('token', {})
             data = {'token': token}
             return Response(data = data, status=status.HTTP_200_OK)
+        # return the response when there is no bearer token in the request
         return Response(data="Hello from users API, you are not logged in, no token to retrieve", status=status.HTTP_200_OK)
-        # return render(request, 'hello.html')
 
 
+
+# This is the user sign in view for logging in via email and password
 class UserSignInView(APIView):
+    # post method to sign in via user email and password
     def post(self, request):
+        # retrieve the email and password from the request
         email = request.data.get('email')
         password = request.data.get('password')
+        # authenticate the identity of the user via email and password
         user = authenticate(request, username=email, password=password)
+        # log in successfully
         if user is not None:
-            # add customized data to token
+            # generate extra fields to included in the JWT token
             personalized_claims = generate_token_claim(user.id)
-            # generate the token by using the google service account
+            # generate the token by using the Google service account with extra fields generated before
             token = generate_jwt(sa_keyfile="user-microservice-apigw.json" ,personalized_claims=personalized_claims)
             login(request, user)
             return Response({'access_token': str(token)}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    # A simple test view
     def get(self,request):
         return Response(data="Hello from users API", status=status.HTTP_200_OK)
 
 
+# A help function to generate extra data to included to the JWT token
 def generate_token_claim(user_id):
-
+    # find the user and use the serializer to retrieve the user info
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
     serializer = UserSerializer(user)
     basic_data= serializer.data
-    print("generate token user email is: ", user)
-    social_account = SocialAccount.objects.get(user_id=user.id)
-    social_token = SocialToken.objects.get(account_id=social_account.id)
-    print("obtained social token is: ", social_token)
-    basic_data.update({"access_token": social_token.token})
+    # add social access token to the JWT token
+    # check if the current login user has a social account associated with the user or not
+    social_account = SocialAccount.objects.filter(user_id=user.id).first()
+    if social_account:
+        social_token = SocialToken.objects.filter(account_id=social_account.id).first()
+        basic_data.update({"access_token": social_token.token})
+    else:
+        basic_data.update({"access_token": None})
     return basic_data
 
-class GoogleOauthJwtView(APIView):
 
+# This is the view for generating the JWT token when logging in via Google Oauth2
+class GoogleOauthJwtView(APIView):
     @method_decorator(login_required)
     def get(self, request):
+        # get the user and the corresponding social account info
         user = request.user
-        print(user.id)
-        all_social_accounts = SocialAccount.objects.all()
-        for social_account in all_social_accounts:
-            print(f"User: {social_account.user}")
-            print(f"Provider: {social_account.provider}")
-            print(f"UID: {social_account.uid}")
-            print(f"Extra Data: {social_account.extra_data}")
-            print(f"id : {social_account.id}")
-            print("\n")
-        all_sites = Site.objects.all()
-
-        # Get site_ids from the Site objects
-        site_ids = [site.id for site in all_sites]
-        print("site ids are, ", site_ids)
         social_account = SocialAccount.objects.get(user_id=user.id)
-        print("social account extra details: ", social_account.extra_data)
-        print(social_account.id)
         name = social_account.extra_data["name"]
+
+        # update the username in the social account
         user.full_name = name
         user.save()
+        # generate the personalized the data to encapsulate into the JWT token
         personalized_claims = generate_token_claim(user.id)
         token = generate_jwt(sa_keyfile="user-microservice-apigw.json", personalized_claims=personalized_claims)
-        print(personalized_claims)
+        print("personalized claim info is: ", personalized_claims)
+        print("generated jwt token after google oath2 is: ", token)
         request.session['token'] = token
         request.session["access_token"] = personalized_claims['access_token']
         return redirect("hello_url")

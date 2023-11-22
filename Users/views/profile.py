@@ -32,6 +32,7 @@ class UserProfileView(APIView):
 
     @method_decorator(check_access_token())
     def put(self, request):
+
         authorization_header = request.headers.get('Authorization')
         if authorization_header and authorization_header.startswith('Bearer '):
             token = authorization_header.split(' ')[1]

@@ -89,9 +89,7 @@ def publish_to_pubsub(email):
 
     # Create Pub/Sub Publisher client
     publisher = pubsub_v1.PublisherClient()
-
-
-
+    
     # Build message
     message_data = {
         'event_type': 'user_registered',
