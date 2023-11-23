@@ -52,7 +52,7 @@ class UserSignInView(APIView):
         # log in successfully
         if user is not None:
             # generate extra fields to included in the JWT token
-            personalized_claims = generate_token_claim(user.id)
+            personalized_claims = generate_token_claim(user.id, login_type="Password")
             # generate the token by using the Google service account with extra fields generated before
             token = generate_jwt(sa_keyfile="user-microservice-apigw.json" ,personalized_claims=personalized_claims)
             login(request, user)
@@ -66,7 +66,7 @@ class UserSignInView(APIView):
 
 
 # A help function to generate extra data to included to the JWT token
-def generate_token_claim(user_id):
+def generate_token_claim(user_id, login_type):
     # find the user and use the serializer to retrieve the user info
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
@@ -80,6 +80,7 @@ def generate_token_claim(user_id):
         basic_data.update({"access_token": social_token.token})
     else:
         basic_data.update({"access_token": None})
+    basic_data.update({"login_type" : login_type})
     return basic_data
 
 
@@ -96,7 +97,7 @@ class GoogleOauthJwtView(APIView):
         user.full_name = name
         user.save()
         # generate the personalized the data to encapsulate into the JWT token
-        personalized_claims = generate_token_claim(user.id)
+        personalized_claims = generate_token_claim(user.id, login_type="Google")
         token = generate_jwt(sa_keyfile="user-microservice-apigw.json", personalized_claims=personalized_claims)
         print("personalized claim info is: ", personalized_claims)
         print("generated jwt token after google oath2 is: ", token)

@@ -37,19 +37,11 @@ class UserProfileView(APIView):
         if authorization_header and authorization_header.startswith('Bearer '):
             token = authorization_header.split(' ')[1]
             payload = google.auth.jwt.decode(token, verify=False)
-            # check if user logs in via google oauth2
-            if "user_id" not in payload:
-                social_account = SocialAccount.objects.get(uid=payload['sub'])
-                user_id = social_account.user_id
-                payload["user_id"] = user_id
-
             User = get_user_model()
-            user = get_object_or_404(User, id=payload["user_id"])
+            user = get_object_or_404(User, id=payload["id"])
             serializer = UserSerializer(user, data=request.data, partial=True)
-            print(serializer)
             if serializer.is_valid():
                 serializer.save()
-                user = get_object_or_404(User, id=payload["user_id"])
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
