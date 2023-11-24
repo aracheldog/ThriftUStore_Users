@@ -8,9 +8,10 @@ def generate_jwt(
     sa_keyfile= '../user-microservice-apigw.json',
     sa_email="jwt-182@user-microservice-402518.iam.gserviceaccount.com",
     audience="https://thriftustore-api-2ubvdk157ecvh.apigateway.user-microservice-402518.cloud.goog",
-    expiry_length=36000,
+    expiry_length=3600,
     personalized_claims=None,
 ):
+
 
     """Generates a signed JSON Web Token using a Google API Service Account."""
     now = int(time.time())
