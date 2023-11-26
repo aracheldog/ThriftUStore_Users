@@ -58,7 +58,7 @@ def validate_address(address, zip_code, city, state):
     credentials = SharedCredentials(key, hostname)
 
     client = ClientBuilder(credentials).with_licenses(["us-core-cloud"]).build_us_street_api_client()
-    # lookup = StreetLookup("535 West 116th Street New York, New York 10027")
+
     lookup = StreetLookup()
     lookup.street = address
     lookup.city = city
@@ -110,5 +110,3 @@ def publish_to_pubsub(email):
     # Publish message
     future = publisher.publish(topic_path, data=message_str)
     future.result()
-
-    print(f'Message published to {topic_path}.')

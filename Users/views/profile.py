@@ -19,7 +19,7 @@ class UserProfileView(APIView):
         User = get_user_model()
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user)
-        user_json = JSONRenderer().render(serializer.data)
+        user_json = JSONRenderer().render(serializer.data).decode('utf-8')
         return HttpResponse(user_json, content_type='application/json')
 
 
@@ -33,6 +33,7 @@ class UserProfileView(APIView):
         city = request.POST.get('city')
         state = request.POST.get('state')
         zip_code = request.POST.get('zip_code')
+
         is_valid_address = None
         if address or state or zip_code or city:
         # Run SmartyStreets address validations
@@ -43,18 +44,21 @@ class UserProfileView(APIView):
             is_valid_address = validate_address(address, zip_code,city, state)
             if is_valid_address is None:
                 return Response({'error': 'Address is not valid!'}, status=status.HTTP_400_BAD_REQUEST)
-
-
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            json_data = serializer.data
             if is_valid_address is not None:
                 user.city = is_valid_address['city']
+                json_data['city'] = is_valid_address['city']
                 user.state = is_valid_address['state']
+                json_data['state'] = is_valid_address['state']
                 user.address = is_valid_address['address']
+                json_data['address'] = is_valid_address['address']
                 user.zip_code = is_valid_address['zip_code']
+                json_data['zip_code'] = is_valid_address['zip_code']
                 user.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(json_data, content_type='application/json',  status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
