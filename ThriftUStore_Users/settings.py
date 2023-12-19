@@ -63,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # "Users.middleware.RequestResponseLoggerMiddleware",
 ]
 
 ROOT_URLCONF = "ThriftUStore_Users.urls"
@@ -187,8 +188,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
 
         'rest_framework.authentication.SessionAuthentication',
-
-
     ]
 }
 
@@ -235,15 +234,44 @@ SOCIALACCOUNT_LOGIN_ON_GET=True
 
 
 
-
-
 credentials_path = "user-microservice-pub-sub-keys.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
-os.environ['SMARTY_AUTH_WEB'] = "184470468785545206"
+# smarty api configuration
+os.environ['SMARTY_AUTH_WEB'] = "187399186880349580"
 # os.environ['SMARTY_WEBSITE_DOMAIN'] = "127.0.0.1"
 os.environ['SMARTY_WEBSITE_DOMAIN'] = "user-microservice-402518.ue.r.appspot.com"
 
 
 
-
+# # # configurations for logging:
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'request_file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'requests.log'),
+#         },
+#         'response_file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'responses.log'),
+#         },
+#     },
+#     'loggers': {
+#         'request_logger': {
+#             'handlers': ['request_file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'response_logger': {
+#             'handlers': ['response_file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#     },
+# }

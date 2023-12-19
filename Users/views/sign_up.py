@@ -45,10 +45,8 @@ class UserRegistrationView(APIView):
                                             zip_code=zip_code)
         else:
             user = User.objects.create_user(email=email, password=password)
-
         # send user registered signal
         user_registered_signal.send(sender=self.__class__, user=user)
-
         return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
 
 
@@ -106,7 +104,6 @@ def publish_to_pubsub(email):
         'registration_time': datetime.now().isoformat(),
     }
     message_str = json.dumps(message_data).encode('utf-8')
-
     # Publish message
     future = publisher.publish(topic_path, data=message_str)
     future.result()
