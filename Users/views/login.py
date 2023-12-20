@@ -105,6 +105,7 @@ def hello(request):
 
 
 # This is the user sign in view for logging in via email and password
+@method_decorator(csrf_exempt, name='dispatch')
 class UserSignInView(APIView):
     # post method to sign in via user email and password
     def post(self, request):

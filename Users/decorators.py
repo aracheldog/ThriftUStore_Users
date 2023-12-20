@@ -48,7 +48,6 @@ def check_permission():
     def decorator(func):
         def wrapper(request, *args, **kwargs):
             authorization_header = get_authorization_header(request)
-
             if authorization_header:
                 jwt_token = authorization_header.split(' ')[1]
                 decoded_token = google.auth.jwt.decode(jwt_token, verify=False)
