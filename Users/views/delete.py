@@ -11,6 +11,7 @@ from Users.views import get_authorization_header
 
 class UserDeleteView(APIView):
 
+
     def delete(self, request):
         # authorization_header = request.headers.get('Authorization', '')
         authorization_header = get_authorization_header(request)

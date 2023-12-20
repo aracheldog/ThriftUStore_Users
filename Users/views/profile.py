@@ -8,12 +8,13 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 
-from Users.decorators import check_access_token
+from Users.decorators import check_access_token, check_permission
 from Users.serializers import UserSerializer
 from Users.views import validate_address
 
 
 class UserProfileView(APIView):
+    @method_decorator(check_permission())
     @method_decorator(check_access_token())
     def get(self,request, user_id):
         User = get_user_model()
@@ -23,7 +24,7 @@ class UserProfileView(APIView):
         return HttpResponse(user_json, content_type='application/json')
 
 
-
+    @method_decorator(check_permission())
     @method_decorator(check_access_token())
     def put(self, request, user_id):
         User = get_user_model()

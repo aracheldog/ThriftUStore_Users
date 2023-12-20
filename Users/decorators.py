@@ -1,6 +1,7 @@
 import requests
 from django.http import HttpResponseForbidden
 import google.auth.jwt
+from django.urls import resolve
 
 from Users.views import get_authorization_header
 
@@ -13,7 +14,6 @@ def check_access_token():
             if authorization_header:
                 jwt_token = authorization_header.split(' ')[1]
                 decoded_token = google.auth.jwt.decode(jwt_token, verify=False)
-
                 if decoded_token["login_type"] == "Google":
                     access_token = decoded_token.get('access_token')
 
@@ -43,4 +43,23 @@ def check_access_token():
 
     return decorator
 
+
+def check_permission():
+    def decorator(func):
+        def wrapper(request, *args, **kwargs):
+            authorization_header = get_authorization_header(request)
+
+            if authorization_header:
+                jwt_token = authorization_header.split(' ')[1]
+                decoded_token = google.auth.jwt.decode(jwt_token, verify=False)
+                resolved_path = resolve(request.path_info)
+                if request.user.id != decoded_token.get('id') or resolved_path.kwargs.get('user_id')!=request.user.id :
+                    return HttpResponseForbidden("Unauthorized Request")
+                return func(request, *args, **kwargs)
+
+            else:
+                return HttpResponseForbidden()
+        return wrapper
+
+    return decorator
 
