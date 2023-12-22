@@ -14,8 +14,7 @@ from Users.views import validate_address
 
 
 class UserProfileView(APIView):
-    @method_decorator(check_permission())
-    @method_decorator(check_access_token())
+
     def get(self,request, user_id):
         User = get_user_model()
         user = get_object_or_404(User, id=user_id)
