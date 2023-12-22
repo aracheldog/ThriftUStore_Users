@@ -100,7 +100,7 @@ def hello(request):
 
         json_string = JsonResponse(data).content.decode('utf-8')
         # redirect back to the front end after getting the token
-        redirect_url = f"https://thriftustore-web.s3.amazonaws.com/public/index.html?data={json_string}"
+        redirect_url = f"http://thriftustore-frontend.s3-website-us-east-1.amazonaws.com?data={json_string}"
         return HttpResponseRedirect(redirect_url)
 
 

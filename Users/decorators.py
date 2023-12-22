@@ -52,7 +52,7 @@ def check_permission():
                 jwt_token = authorization_header.split(' ')[1]
                 decoded_token = google.auth.jwt.decode(jwt_token, verify=False)
                 resolved_path = resolve(request.path_info)
-                if request.user.id != decoded_token.get('id') or resolved_path.kwargs.get('user_id')!=request.user.id :
+                if resolved_path.kwargs.get('user_id') != decoded_token.get('id') :
                     return HttpResponseForbidden("Unauthorized Request")
                 return func(request, *args, **kwargs)
 
